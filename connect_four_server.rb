@@ -13,20 +13,27 @@ class ConnectFourGameServer
    #meth 'int add(int, int)', 'Add two numbers', 'add'
    #meth 'int div(int, int)', 'Divide two numbers'
 }
-
-	def move()
-
-	end
-
-	def startGame()
+	def connect(player, port)
 
 	end
 
-	def saveGame()
+	def startGame(gameType)
+		# Pre Conditions
+		begin
+			raise ArgumentError, "Invalid Game Type." unless (gameType == "Normal" || gameType == "TOOT")
+		end
+		# End Pre Conditions
+	end
+
+	def move(player, column)
 
 	end
 
-	def loadGame()
+	def saveGame
+
+	end
+
+	def loadGame(gameId)
 
 	end
 

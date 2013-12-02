@@ -1,6 +1,10 @@
 class ConnectFourClient
 
-	def connect(player, port, gameType)
+	def connect(player, port)
+
+	end
+
+	def startGame(gameType)
 
 	end
 
@@ -8,8 +12,7 @@ class ConnectFourClient
 
 	end
 
-	def getLeaderBoard()
-
+	def getLeaderBoard
 
 	end
 end
