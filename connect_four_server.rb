@@ -12,7 +12,7 @@ require "xmlrpc/server"
 port = 50500
 
 class ConnectFourGameRoom
-	attr_reader :roomId, :numPlayers
+	attr_reader :roomId, :numPlayers, :player1, :player2
 
 	def initialize(roomId)
 		@roomId = roomId
@@ -86,9 +86,15 @@ class ConnectFourGameRoom
 	def getLeaderBoard()
 
 	end
+
+	def disconnect(player)
+		return "You just lost the game."
+	end
 end
 
 class ConnectFourServer
+	attr_reader :gameRooms
+
 	def initialize
 		@gameRooms = Array.new
 		for i in 1..10
@@ -122,6 +128,22 @@ class ConnectFourServer
 
 	def move(roomId, player, column)
 		@gameRooms[roomId - 1].move(player, column)
+	end
+
+	def getRoomPlayer1(roomId)
+		@gameRooms[roomId - 1].player1
+	end
+
+	def getRoomPlayer2(roomId)
+		@gameRooms[roomId - 1].player2
+	end
+
+	def getRoomNumPlayers(roomId)
+		@gameRooms[roomId - 1].numPlayers
+	end
+
+	def disconnect(roomId, player)
+		@gameRooms[roomId - 1].disconnect(player)
 	end
 end
 

@@ -53,10 +53,17 @@ class ConnectFourUI
         @window1.signal_connect("destroy") {
           Gtk.main_quit
         }
-        setupGameRoomsWindow
+        begin
+          setupGameRoomsWindow
+          @window1.show()
+          @setupWindow.hide()
+        rescue Exception => e
+          dialog = Gtk::Dialog.new("Attention", @setupWindow)
+          dialog.signal_connect('response') {dialog.destroy}
+          dialog.vbox.add(Gtk::Label.new("Looks like the server is down."))
+          dialog.show_all
+        end
 
-        @window1.show()
-        @setupWindow.hide()
       end
     }
 
@@ -100,7 +107,7 @@ class ConnectFourUI
       dialog.signal_connect('response') {dialog.destroy}
       dialog.vbox.add(Gtk::Label.new("Invalid Room number."))
       dialog.show_all
-    elsif (@roomInfo[@roomNumberText.text.to_i] == 2)
+    elsif (@roomInfo[@roomNumberText.text.to_i - 1] == 2)
       dialog = Gtk::Dialog.new("Attention", @setupWindow)
       dialog.signal_connect('response') {dialog.destroy}
       dialog.vbox.add(Gtk::Label.new("Room is full.  Please select another room."))
@@ -108,9 +115,44 @@ class ConnectFourUI
     else
       @roomNumber = @roomNumberText.text.to_i
       @client.gameServer.connect(@roomNumber, @playerName)
+      @window1.hide()
+      @lobbyWindow = @builder.get_object("lobby_window")
+      @lobbyWindow.signal_connect("destroy") {
+          puts @client.gameServer.disconnect(@roomNumber, @playerName)
+          Gtk.main_quit
+      }
+      setupLobbyRoom
+      @lobbyWindow.show_all
     end
   end
 
+  def setupLobbyRoom
+    lobbyRefreshButton = @builder.get_object("lobbyRefresh")
+    lobbyRefreshButton.signal_connect("clicked") {
+      refreshLobby
+    }
+    refreshLobby
+    if(@client.gameServer.getRoomNumPlayers(@roomNumber) == 2)
+      startNormButton = @builder.get_object("startNorm")
+      startNormButton.sensitive = false
+      startTootButton = @builder.get_object("startToot")
+      startTootButton.sensitive = false
+    end
+
+  end
+
+  def refreshLobby
+    puts "Refreshing lobby..."
+    lobbyp1label = @builder.get_object("lobby_p1_label")
+    lobbyp2label = @builder.get_object("lobby_p2_label")
+    if(@client.gameServer.getRoomNumPlayers(@roomNumber) == 1)
+      lobbyp1label.text= @playerName
+      lobbyp2label.text="Waiting for player 2..."
+    else
+      lobbyp1label.text=@client.gameServer.getRoomPlayer1(@roomNumber)
+      lobbyp2label.text=@client.gameServer.getRoomPlayer2(@roomNumber)
+    end
+  end
 
 
 
