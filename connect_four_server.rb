@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
-
+require "./connect_four_game_board"
+require "./connect_four_game"
+require './win_checker_normal'
+require './win_checker_toot'
 require "xmlrpc/server"
 
 port = 50500
@@ -9,24 +12,55 @@ port = 50500
 #
 
 class ConnectFourGameServer
-   INTERFACE = XMLRPC::interface("ConnectFourGameServer") {
-   #meth 'int add(int, int)', 'Add two numbers', 'add'
-   #meth 'int div(int, int)', 'Divide two numbers'
-}
-	def connect(player, port)
 
+	def initialize
+		@numPlayers = 0
+	end
+
+	def connect(player)
+		if @numPlayers == 0
+			@player1 = player
+			@numPlayers = 1
+			#puts "Connect NumPlayers: #{@numPlayers}"
+		elsif @numPlayers == 1
+			@player2 = player
+			@numPlayers = 2
+		else
+			raise ArgumentError, "Unable to join.  There are already two players in this game."
+		end
 	end
 
 	def startGame(gameType)
+		puts "NumPlayers: #{@numPlayers}"
 		# Pre Conditions
 		begin
 			raise ArgumentError, "Invalid Game Type." unless (gameType == "Normal" || gameType == "TOOT")
 		end
+
+		begin
+			raise ArgumentError, "You require two players." unless @numPlayers == 2
+		end
 		# End Pre Conditions
+
+		if(gameType == "Normal")
+			@game = ConnectFourGame.new(WinCheckerNormal, @player1, @player2)
+		else
+			@game = ConnectFourGame.new(WinCheckerToot, @player1, @player2)
+		end
+
+		return "OK"
+	end
+
+	def getGameState
+		puts "GameState: #{@game.gameBoard.grid}"
+		return @game.gameBoard.grid
 	end
 
 	def move(player, column)
-
+		puts "Trying to move.."
+		@game.move(player, column)
+		puts "Finished moving."
+		return "OK"
 	end
 
 	def saveGame
@@ -44,6 +78,6 @@ end
 
 server = XMLRPC::Server.new(port, ENV['HOSTNAME'])
 
-server.add_handler(Num::INTERFACE,  ConnectFourGameServer.new)
+server.add_handler("ConnectFourGameServer",  ConnectFourGameServer.new)
 
 server.serve

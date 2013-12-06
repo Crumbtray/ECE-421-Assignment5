@@ -8,15 +8,16 @@ class ConnectFourGame
 	attr_reader :rows, :columns, :gameBoard, :player1, :player2
 	attr_accessor :winChecker
 	
-	def initialize(winChecker, player1, ai)
+	def initialize(winChecker, player1, player2)
 		# Game Type is either Normal, or TOOT (OTTO)
 		@player1 = player1
-		@player2 = ai
+		@player2 = player2
 		@winChecker = winChecker
-		@gameBoard = ConnectFourGameBoard.new(6, 7, player1, ai)
+		@gameBoard = ConnectFourGameBoard.new(6, 7, player1, player2)
 	end
 
 	def move(player, column)
+		puts "AM MOVING"
 	    #Pre Conditions
 		begin
 			raise ArgumentError, "Game is over.  Please start a new one." unless @gameBoard.endGame == false
@@ -35,8 +36,7 @@ class ConnectFourGame
 	    #Post Conditions
 	    assert(@gameBoard.grid[column - 1].size >= beforeCount)
 	    #End Post Conditions
-		
-		player1.updateGrid(returnVal, player)
+	    return "OK"
 	end
 
 	def endTurn()
