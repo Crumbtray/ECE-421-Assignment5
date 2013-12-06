@@ -2,9 +2,9 @@ require "xmlrpc/client"
 
 class ConnectFourClient
 
-	def initialize(player)
+	def initialize(player, port)
 		@player = player
-		server = XMLRPC::Client.new("localhost", "/RPC2", 50500);
+		server = XMLRPC::Client.new("localhost", "/RPC2", port);
 		@gameServer = server.proxy("ConnectFourGameServer")
 		@gameServer.connect(player)
 	end
@@ -30,9 +30,9 @@ class ConnectFourClient
 	end
 end
 
-client = ConnectFourClient.new("me")
+client = ConnectFourClient.new("me", 50500)
 
-client2 = ConnectFourClient.new("me2")
+client2 = ConnectFourClient.new("me2", 50501)
 
 client.startGame("Normal")
 

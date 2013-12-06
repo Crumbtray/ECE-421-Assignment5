@@ -17,7 +17,6 @@ class ConnectFourGame
 	end
 
 	def move(player, column)
-		puts "AM MOVING"
 	    #Pre Conditions
 		begin
 			raise ArgumentError, "Game is over.  Please start a new one." unless @gameBoard.endGame == false
@@ -36,7 +35,6 @@ class ConnectFourGame
 	    #Post Conditions
 	    assert(@gameBoard.grid[column - 1].size >= beforeCount)
 	    #End Post Conditions
-	    return "OK"
 	end
 
 	def endTurn()

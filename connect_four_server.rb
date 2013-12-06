@@ -5,15 +5,17 @@ require './win_checker_normal'
 require './win_checker_toot'
 require "xmlrpc/server"
 
-port = 50500
 #
 # Novemver 2013 - Verified working on ports 50500 to 50550, its suggested
 # to work only within ports 50500-50550
 #
+port = 50500
 
-class ConnectFourGameServer
+class ConnectFourGameRoom
+	attr_reader :roomId, :numPlayers
 
-	def initialize
+	def initialize(roomId)
+		@roomId = roomId
 		@numPlayers = 0
 	end
 
@@ -30,7 +32,7 @@ class ConnectFourGameServer
 		end
 	end
 
-	def startGame(gameType)
+	def startGame(player, gameType)
 		puts "NumPlayers: #{@numPlayers}"
 		# Pre Conditions
 		begin
@@ -43,6 +45,10 @@ class ConnectFourGameServer
 
 		begin
 			raise ArgumentError, "You require two players." unless @numPlayers == 2
+		end
+
+		begin
+			raise ArgumentError, "Only player 1 can set the game." unless player == @player1
 		end
 		# End Pre Conditions
 
@@ -65,9 +71,7 @@ class ConnectFourGameServer
 	end
 
 	def move(player, column)
-		puts "Trying to move.."
 		@game.move(player, column)
-		puts "Finished moving."
 		return "OK"
 	end
 
@@ -84,8 +88,45 @@ class ConnectFourGameServer
 	end
 end
 
+class ConnectFourServer
+	def initialize
+		@gameRooms = Array.new
+		for i in 1..10
+			@gameRooms.push(ConnectFourGameRoom.new(i))
+		end
+	end
+
+	def getServers
+		returnVal = Array.new
+		@gameRooms.each {|room|
+			returnVal.push(room.numPlayers)
+		}
+		return returnVal
+	end
+
+	def connect(player, roomId)
+		@gameRooms[roomId].connect(player)
+	end
+
+	def startGame(player, roomId, gameType)
+		@gameRooms[roomId].startGame(player, gameType)
+	end
+
+	def getGameState(roomId)
+		@gameRooms[roomId].getGameState
+	end
+
+	def getCurrentPlayer(roomId)
+		@gameRooms[roomId].getGameState
+	end
+
+	def move(roomId, player, column)
+		@gameRooms[roomId].move(player, column)
+	end
+end
+
 server = XMLRPC::Server.new(port, ENV['HOSTNAME'])
 
-server.add_handler("ConnectFourGameServer",  ConnectFourGameServer.new)
+server.add_handler("ConnectFourGameServer",  ConnectFourServer.new)
 
 server.serve
