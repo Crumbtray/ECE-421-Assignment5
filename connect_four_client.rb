@@ -21,6 +21,10 @@ class ConnectFourClient
 		return @gameServer.getGameState
 	end
 
+	def getCurrentPlayer
+		return @gameServer.getCurrentPlayer
+	end
+
 	def getLeaderBoard
 
 	end
@@ -36,4 +40,4 @@ client.move(1)
 
 puts client.getGameState.to_s
 
-client.move(1)
+puts client.getCurrentPlayer

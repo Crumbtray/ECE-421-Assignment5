@@ -38,6 +38,10 @@ class ConnectFourGameServer
 		end
 
 		begin
+			raise ArgumentError, "Invalid operation: You cannot restart a game that is on-going." unless @game.nil?
+		end
+
+		begin
 			raise ArgumentError, "You require two players." unless @numPlayers == 2
 		end
 		# End Pre Conditions
@@ -54,6 +58,10 @@ class ConnectFourGameServer
 	def getGameState
 		puts "GameState: #{@game.gameBoard.grid}"
 		return @game.gameBoard.grid
+	end
+
+	def getCurrentPlayer
+		return @game.gameBoard.currentPlayer
 	end
 
 	def move(player, column)
