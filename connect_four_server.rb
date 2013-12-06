@@ -104,24 +104,24 @@ class ConnectFourServer
 		return returnVal
 	end
 
-	def connect(player, roomId)
-		@gameRooms[roomId].connect(player)
+	def connect(roomId, player)
+		@gameRooms[roomId - 1].connect(player)
 	end
 
-	def startGame(player, roomId, gameType)
-		@gameRooms[roomId].startGame(player, gameType)
+	def startGame(roomId, player, gameType)
+		@gameRooms[roomId - 1].startGame(player, gameType)
 	end
 
 	def getGameState(roomId)
-		@gameRooms[roomId].getGameState
+		@gameRooms[roomId - 1].getGameState
 	end
 
 	def getCurrentPlayer(roomId)
-		@gameRooms[roomId].getGameState
+		@gameRooms[roomId - 1].getGameState
 	end
 
 	def move(roomId, player, column)
-		@gameRooms[roomId].move(player, column)
+		@gameRooms[roomId - 1].move(player, column)
 	end
 end
 
