@@ -29,8 +29,40 @@ class ConnectFourDatabase
 		# End Post Conditions
 	end
 
-	def updateLeaderBoard(player, result)
-		
+	def addWin(player, result)
+        res = @db.query('select wins from results WHERE player = "#{player}"')
+        if res.num_rows == 0
+            @db.query("INSERT INTO results (player, wins, losses, ties)
+                            VALUES ('#{player}', 1, 0, 0);")
+        else
+            row = res.fetch_row
+            wins = row[0] + 1
+            @db.query("UPDATE results SET wins = #{wins} WHERE player = '#{player}';")
+        end
+	end
+    
+	def addLoss(player, result)
+        res = @db.query('select losses from results WHERE player = "#{player}"')
+        if res.num_rows == 0
+            @db.query("INSERT INTO results (player, wins, losses, ties)
+                            VALUES ('#{player}', 0, 1, 0);")
+        else
+            row = res.fetch_row
+            losses = row[0] + 1
+            @db.query("UPDATE results SET ties = #{losses} WHERE player = '#{player}';")
+        end
+	end
+    
+	def addTie(player, result)
+        res = @db.query('select ties from results WHERE player = "#{player}"')
+        if res.num_rows == 0
+            @db.query("INSERT INTO results (player, wins, losses, ties)
+                            VALUES ('#{player}', 0, 0, 1);")
+        else
+            row = res.fetch_row
+            ties = row[0] + 1
+            @db.query("UPDATE results SET ties = #{ties} WHERE player = '#{player}';")
+        end
 	end
 
 	def getLeaderBoard
