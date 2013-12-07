@@ -4,6 +4,7 @@ require "./connect_four_game"
 require './win_checker_normal'
 require './win_checker_toot'
 require "xmlrpc/server"
+require './connect_four_database'
 
 #
 # Novemver 2013 - Verified working on ports 50500 to 50550, its suggested
@@ -12,7 +13,7 @@ require "xmlrpc/server"
 port = 50500
 
 class ConnectFourGameRoom
-	attr_reader :roomId, :numPlayers, :player1, :player2
+	attr_reader :roomId, :numPlayers, :player1, :player2, :gameType
 
 	def initialize(roomId)
 		@roomId = roomId
@@ -54,8 +55,10 @@ class ConnectFourGameRoom
 
 		if(gameType == "Normal")
 			@game = ConnectFourGame.new(WinCheckerNormal, @player1, @player2)
+			@gameType = "Normal"
 		else
 			@game = ConnectFourGame.new(WinCheckerToot, @player1, @player2)
+			@gameType = "TOOT"
 		end
 
 		return "OK"
@@ -73,14 +76,6 @@ class ConnectFourGameRoom
 	def move(player, column)
 		@game.move(player, column)
 		return "OK"
-	end
-
-	def saveGame
-
-	end
-
-	def loadGame(gameId)
-
 	end
 
 	def getLeaderBoard()
@@ -172,6 +167,33 @@ class ConnectFourServer
 
 	def getRoomWinner(roomId)
 		@gameRooms[roomId - 1].getWinner
+	end
+	def saveGame(player1, player2, gameType)
+		#Save the game to the db
+		@db.saveGame(player1, player2, gameType)
+	end
+
+	def loadGame(player)
+		#Load game from db
+		player2, gameType = @db.loadGame(player)
+		#Scan current rooms to see if any of them match (also check if the room is free in case we need it)
+		freeRoomId = -1
+		@gameRooms.each do |room|
+			if((room.player1 == player) and (room.gameType == gameType) and (room.player2.nil?))
+				#Room matches, add the player to the room
+				room.connect(player)
+				#Return the room id
+				return room.roomId
+			else if !(room.getGameActive)
+				freeRoomId = room.roomId
+			end
+		end
+		
+		#No matches found, add player to room and initialize game
+		if(freeRoomId != -1)
+			@gameRooms[roomId - 1].startGame(player, gameType)
+		end
+		return freeRoomId
 	end
 end
 
