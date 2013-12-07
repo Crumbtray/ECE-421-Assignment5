@@ -16,7 +16,7 @@ module WinCheckerNormal
 						current == gameBoard.grid[x][y+2] &&
 						current == gameBoard.grid[x][y+3])
 						gameBoard.endGame = true;
-						return current;
+						gameBoard.winner = current
 					end
 					if (x < gameBoard.colSize - 3)
 						if(
@@ -24,13 +24,13 @@ module WinCheckerNormal
 							current == gameBoard.grid[x+2][y] &&
 							current == gameBoard.grid[x+3][y])
 							gameBoard.endGame = true;
-							return current;
+							gameBoard.winner = current
 						end
 						if(current == gameBoard.grid[x+1][y+1] &&
 							current == gameBoard.grid[x+2][y+2] &&
 							current == gameBoard.grid[x+3][y+3])
 							gameBoard.endGame = true;
-							return current;
+							gameBoard.winner = current;
 						end
 						
 						# Check lower diagonal
@@ -39,7 +39,7 @@ module WinCheckerNormal
 								current == gameBoard.grid[x+2][y-2] &&
 								current == gameBoard.grid[x+3][y-3])
 								gameBoard.endGame = true;
-								return current;
+								gameBoard.winner = current
 							end
 						end
 					end

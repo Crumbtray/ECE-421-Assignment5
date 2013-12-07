@@ -89,12 +89,14 @@ class ConnectFourGameRoom
 
 	def disconnect(player)
 		# End the game
-		@game.gameBoard.endGame = true
+		if(!@game.nil?)
+			@game.gameBoard.endGame = true
+		end
 		# Whoever remains is the winner
 		# Record the stats
 		# Clean out the room.
 		@numPlayers = @numPlayers - 1
-		return "You just lost the game."
+		return "You just exited the game."
 	end
 
 	def getGameActive
@@ -103,6 +105,10 @@ class ConnectFourGameRoom
 		else
 			return !@game.gameBoard.endGame
 		end
+	end
+
+	def getWinner
+		return @game.gameBoard.winner
 	end
 end
 
@@ -162,6 +168,10 @@ class ConnectFourServer
 
 	def getRoomGameActive(roomId)
 		@gameRooms[roomId - 1].getGameActive
+	end
+
+	def getRoomWinner(roomId)
+		@gameRooms[roomId - 1].getWinner
 	end
 end
 

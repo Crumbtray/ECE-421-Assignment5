@@ -96,7 +96,7 @@ class ConnectFourUI
   end
 
   def tryJoinRoom
-    puts "Trying to join room #{@roomNumberText.text}"
+    refreshGameRooms
     if(@roomNumberText.text.empty?)
         dialog = Gtk::Dialog.new("Attention", @setupWindow)
         dialog.signal_connect('response') {dialog.destroy}
@@ -111,6 +111,11 @@ class ConnectFourUI
       dialog = Gtk::Dialog.new("Attention", @setupWindow)
       dialog.signal_connect('response') {dialog.destroy}
       dialog.vbox.add(Gtk::Label.new("Room is full.  Please select another room."))
+      dialog.show_all
+    elsif (@roomInfo[@roomNumberText.text.to_i - 1] == 1 && @client.gameServer.getRoomPlayer1(@roomNumberText.text.to_i) == @playerName)
+      dialog = Gtk::Dialog.new("Attention", @setupWindow)
+      dialog.signal_connect('response') {dialog.destroy}
+      dialog.vbox.add(Gtk::Label.new("Someone else is in here with your name!"))
       dialog.show_all
     else
       @roomNumber = @roomNumberText.text.to_i
@@ -144,21 +149,30 @@ class ConnectFourUI
 
     startGameButton.signal_connect("clicked") {
       if(@client.gameServer.getRoomPlayer1(@roomNumber) == @playerName)
-        #I'm player 1, so I get to dictate the game.
-        normalGameTypeRadio = @builder.get_object("lobby_normal")
-        if(normalGameTypeRadio.active?)
-          startOnlineGame("Normal")
-        else
-          startOnlineGame("Toot")
-        end
+        if(@client.gameServer.getRoomNumPlayers(@roomNumber) == 2)
 
-        @lobbyWindow.hide
-        @online_window = @builder.get_object("online_window")
-        @online_window.signal_connect("destroy") {
-          puts @client.gameServer.disconnect(@roomNumber, @playerName)
-          Gtk.main_quit
-        }
-        @online_window.show_all
+          #I'm player 1, so I get to dictate the game.
+          normalGameTypeRadio = @builder.get_object("lobby_normal")
+          if(normalGameTypeRadio.active?)
+            startOnlineGame("Normal")
+          else
+            startOnlineGame("Toot")
+          end
+
+          @lobbyWindow.hide
+          @online_window = @builder.get_object("online_window")
+          @online_window.signal_connect("destroy") {
+            puts @client.gameServer.disconnect(@roomNumber, @playerName)
+            Gtk.main_quit
+          }
+          setupOnlineGameBoard
+          @online_window.show_all
+        else
+          dialog = Gtk::Dialog.new("Attention", @setupWindow)
+          dialog.signal_connect('response') {dialog.destroy}
+          dialog.vbox.add(Gtk::Label.new("Can't start the game with only 1 person!"))
+          dialog.show_all
+        end
       else
         # I'm player 2, so I have to keep checking until I can join the game.
         if(!@client.gameServer.getRoomGameActive(@roomNumber))
@@ -173,12 +187,16 @@ class ConnectFourUI
             puts @client.gameServer.disconnect(@roomNumber, @playerName)
             Gtk.main_quit
           }
-
+          setupOnlineGameBoard
           @online_window.show_all
         end
+
+
+        GLib::Timeout.add(100) {
+          updateBoard
+        }
       end
     }
-
   end
 
   def refreshLobby
@@ -206,6 +224,86 @@ class ConnectFourUI
 
   end
 
+  def setupOnlineGameBoard
+    # Setup the label.
+    gameName = @builder.get_object("Game_Label")
+    gameName.text="Room #{@roomNumber}"
+
+    # Setup all the buttons.  Gotta do it manually, one at a time.
+    button1 = @builder.get_object("gameButton1")
+    button1.signal_connect("clicked") {
+      tryMove(1)
+    }
+
+    button2 = @builder.get_object("gameButton2")
+    button2.signal_connect("clicked") {
+      tryMove(2)
+    }
+
+    button3 = @builder.get_object("gameButton3")
+    button3.signal_connect("clicked") {
+      tryMove(3)
+    }
+
+    button4 = @builder.get_object("gameButton4")
+    button4.signal_connect("clicked") {
+      tryMove(4)
+    }
+
+    button5 = @builder.get_object("gameButton5")
+    button5.signal_connect("clicked") {
+      tryMove(5)
+    }
+
+    button6 = @builder.get_object("gameButton6")
+    button6.signal_connect("clicked") {
+      tryMove(6)
+    }
+
+    button7 = @builder.get_object("gameButton7")
+    button7.signal_connect("clicked") {
+      tryMove(7)
+    }
+  end
+
+  def tryMove(column)
+    begin
+      @client.gameServer.move(@roomNumber, @playerName, column)
+      updateBoard
+    rescue Exception => e
+      dialog = Gtk::Dialog.new("Attention", @setupWindow)
+      dialog.signal_connect('response') {dialog.destroy}
+      dialog.vbox.add(Gtk::Label.new("Please wait for your turn!"))
+      dialog.show_all
+    end
+  end
+
+  def updateBoard
+    board = @client.gameServer.getGameState(@roomNumber)
+    board.each_with_index {|column, colIndex|
+      column.each_with_index {|row, rowIndex|
+        if(row == @playerName)
+          image = @builder.get_object("gameImage#{colIndex}#{rowIndex}")
+          image.set_file(@playerToken)
+        else
+          image = @builder.get_object("gameImage#{colIndex}#{rowIndex}")
+          image.set_file(@enemyToken)
+        end
+      }
+    }
+    # Check if someone won
+    result = @client.gameServer.getRoomGameActive(@roomNumber)
+    if (!result)
+      winner = @client.gameServer.getRoomWinner(@roomNumber)
+      dialog = Gtk::Dialog.new("Winner", @online_window)
+      dialog.signal_connect('response') {dialog.destroy}
+      dialog.vbox.add(Gtk::Label.new("#{winner} has won the game!  Please exit now."))
+      dialog.show_all
+      return false
+    end
+
+    return true
+  end
 
 end
 

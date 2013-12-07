@@ -763,7 +763,7 @@
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkLabel" id="Game Label">
+          <object class="GtkLabel" id="Game_Label">
             <property name="visible">True</property>
             <property name="label" translatable="yes">label</property>
           </object>
