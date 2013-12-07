@@ -217,11 +217,6 @@ class ConnectFourUI
           setupOnlineGameBoard
           @online_window.show_all
         end
-
-
-        GLib::Timeout.add(500) {
-          updateBoard
-        }
       end
     }
   end
@@ -290,6 +285,10 @@ class ConnectFourUI
     button7 = @builder.get_object("gameButton7")
     button7.signal_connect("clicked") {
       tryMove(7)
+    }
+
+    GLib::Timeout.add(500) {
+      updateBoard
     }
   end
 
