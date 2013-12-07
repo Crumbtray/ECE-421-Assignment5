@@ -96,7 +96,7 @@ class ConnectFourUI
   end
 
   def tryJoinRoom
-    puts "Trying to join room #{@roomNumberText.text}"
+    refreshGameRooms
     if(@roomNumberText.text.empty?)
         dialog = Gtk::Dialog.new("Attention", @setupWindow)
         dialog.signal_connect('response') {dialog.destroy}
@@ -111,6 +111,11 @@ class ConnectFourUI
       dialog = Gtk::Dialog.new("Attention", @setupWindow)
       dialog.signal_connect('response') {dialog.destroy}
       dialog.vbox.add(Gtk::Label.new("Room is full.  Please select another room."))
+      dialog.show_all
+    elsif (@roomInfo[@roomNumberText.text.to_i - 1] == 1 && @client.gameServer.getRoomPlayer1(@roomNumberText.text.to_i) == @playerName)
+      dialog = Gtk::Dialog.new("Attention", @setupWindow)
+      dialog.signal_connect('response') {dialog.destroy}
+      dialog.vbox.add(Gtk::Label.new("Someone else is in here with your name!"))
       dialog.show_all
     else
       @roomNumber = @roomNumberText.text.to_i

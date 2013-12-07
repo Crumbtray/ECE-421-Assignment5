@@ -89,7 +89,9 @@ class ConnectFourGameRoom
 
 	def disconnect(player)
 		# End the game
-		@game.gameBoard.endGame = true
+		if(!@game.nil?)
+			@game.gameBoard.endGame = true
+		end
 		# Whoever remains is the winner
 		# Record the stats
 		# Clean out the room.
