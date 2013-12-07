@@ -184,14 +184,14 @@ class ConnectFourServer
 				room.connect(player)
 				#Return the room id
 				return room.roomId
-			else if !(room.getGameActive)
+			elsif !(room.getGameActive)
 				freeRoomId = room.roomId
 			end
 		end
 		
 		#No matches found, add player to room and initialize game
 		if(freeRoomId != -1)
-			@gameRooms[roomId - 1].startGame(player, gameType)
+			@gameRooms[freeRoomId - 1].startGame(player, gameType)
 		end
 		return freeRoomId
 	end
