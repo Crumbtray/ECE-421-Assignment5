@@ -4,7 +4,7 @@ include Test::Unit::Assertions
 class ConnectFourGameBoard
 
 	attr_reader :grid, :rowSize, :colSize, :currentPlayer, :player1, :player2
-	attr_accessor :endGame, :currentPlayer, :grid
+	attr_accessor :endGame, :currentPlayer, :grid, :winner
 
 	def initialize(rows, columns, player1, player2)
 		@grid = Array.new
@@ -23,15 +23,15 @@ class ConnectFourGameBoard
 	def add(player, column)
 		# Pre Conditions
 		begin
-			raise ArgumentError, "ConnectFourGameBoard:: ArgumentError -> invalid column." unless (column > 0 and column <= colSize)
+			raise ArgumentError, "Invalid column." unless (column > 0 and column <= colSize)
 		end
 
 		begin
-			raise ArgumentError, "ConnectFourGameBoard:: ArgumentError -> Game is over.  Please start a new one." unless @endGame == false
+			raise ArgumentError, "Game is over.  Please start a new one." unless @endGame == false
 		end
 
 		begin
-			raise ArgumentError, "ConnectFourGameBoard:: ArgumentError -> Not this player's turn." unless @currentPlayer == player
+			raise ArgumentError, "Not this player's turn." unless @currentPlayer == player
 		end
 
 		# Pre Conditions End

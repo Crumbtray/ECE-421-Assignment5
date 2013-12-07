@@ -5,7 +5,7 @@ include Test::Unit::Assertions
 
 class ConnectFourGame
  
-	attr_reader :rows, :columns, :gameBoard, :player1, :player2
+	attr_reader :rows, :columns, :gameBoard, :player1, :player2, :winner
 	attr_accessor :winChecker
 	
 	def initialize(winChecker, player1, player2)
@@ -30,23 +30,12 @@ class ConnectFourGame
 		
 		beforeCount = @gameBoard.grid[column - 1].size
 
-		returnVal = @gameBoard.add(player, column)
-	    
+		@gameBoard.add(player, column)
+	    @winChecker.checkWinCondition(@gameBoard)
+
+
 	    #Post Conditions
 	    assert(@gameBoard.grid[column - 1].size >= beforeCount)
 	    #End Post Conditions
-	end
-
-	def endTurn()
-		potentialWinner = @winChecker.checkWinCondition(@gameBoard)
-	    if(@gameBoard.endGame == true)
-	    	@player1.endGame(potentialWinner)
-	    else
-	    	@player2.makeMove(self)
-	    	potentialWinner = @winChecker.checkWinCondition(@gameBoard)
-	    	if(@gameBoard.endGame == true)
-	    		@player1.endGame(potentialWinner)
-	    	end
-	    end
 	end
 end
