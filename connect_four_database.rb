@@ -4,7 +4,7 @@ require 'mysql'
 class ConnectFourDatabase
 
 	def initialize
-		####@db = Mysql.new("mysqlsrv.ece.ualberta.ca", "group1" , "GF2OHhMfWY7s", "C410test", 13010)
+		@db = Mysql.new("mysqlsrv.ece.ualberta.ca", "group4" , "Bw9pjlUpiEpr", "group4", 13010)
 	end
 
 	def reset
