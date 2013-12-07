@@ -109,6 +109,27 @@ class ConnectFourUI
 
     }
 
+    loadButton = @builder.get_object("loadGame")
+    loadButton.signal_connect("clicked") {
+      roomId = @client.gameServer.loadGame(@playerName)
+      if(roomId == -1)
+        dialog = Gtk::Dialog.new("Attention", @setupWindow)
+        dialog.signal_connect('response') {dialog.destroy}
+        dialog.vbox.add(Gtk::Label.new("You have no saved games."))
+        dialog.show_all
+      else
+        @roomNumber = roomId
+        @window1.hide()
+        @lobbyWindow = @builder.get_object("lobby_window")
+        @lobbyWindow.signal_connect("destroy") {
+            puts @client.gameServer.disconnect(@roomNumber, @playerName)
+            Gtk.main_quit
+        }
+        setupLobbyRoom
+        @lobbyWindow.show_all
+      end
+    }
+
     @roomNumberText = @builder.get_object("roomNumber")
 
   end
@@ -247,6 +268,12 @@ class ConnectFourUI
   end
 
   def setupOnlineGameBoard
+    #Setup the Save Game Button.
+    saveGameButton = @builder.get_object("save_game")
+    saveGameButton.signal_connect("clicked") {
+      @client.gameServer.saveGame(@client.gameServer.getRoomPlayer1, @client.gameServer.getRoomPlayer2,@client.gameServer.getRoomGameType)
+    }
+
     # Setup the label.
     gameName = @builder.get_object("Game_Label")
     gameName.text="Room #{@roomNumber}"

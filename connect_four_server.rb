@@ -167,6 +167,10 @@ class ConnectFourServer
 		@gameRooms[roomId - 1].numPlayers
 	end
 
+	def getRoomGameType(roomId)
+		@gameRooms[roomId - 1].gameType
+	end
+
 	def disconnect(roomId, player)
 		@gameRooms[roomId - 1].disconnect(player)
 	end
