@@ -185,6 +185,11 @@ class ConnectFourUI
           setupOnlineGameBoard
           @online_window.show_all
         end
+
+
+        GLib::Timeout.add(100) {
+          updateBoard
+        }
       end
     }
   end
@@ -254,11 +259,6 @@ class ConnectFourUI
     button7.signal_connect("clicked") {
       tryMove(7)
     }
-
-    GLib::Timeout.add(100) {
-      updateBoard
-      puts 'Updating board!'
-    }
   end
 
   def tryMove(column)
@@ -268,7 +268,7 @@ class ConnectFourUI
     rescue Exception => e
       dialog = Gtk::Dialog.new("Attention", @setupWindow)
       dialog.signal_connect('response') {dialog.destroy}
-      dialog.vbox.add(Gtk::Label.new(e.to_s))
+      dialog.vbox.add(Gtk::Label.new("Please wait for your turn!"))
       dialog.show_all
     end
   end
@@ -294,7 +294,10 @@ class ConnectFourUI
       dialog.signal_connect('response') {dialog.destroy}
       dialog.vbox.add(Gtk::Label.new("#{winner} has won the game!  Please exit now."))
       dialog.show_all
+      return false
     end
+
+    return true
   end
 
 end
