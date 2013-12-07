@@ -40,7 +40,7 @@ class ConnectFourGameRoom
 		end
 
 		begin
-			raise ArgumentError, "Invalid operation: You cannot restart a game that is on-going." unless @game.nil?
+			raise ArgumentError, "Invalid operation: You cannot restart a game that is on-going." unless @game.nil? || @game.gameBoard.endGame
 		end
 
 		begin
@@ -88,7 +88,21 @@ class ConnectFourGameRoom
 	end
 
 	def disconnect(player)
+		# End the game
+		@game.gameBoard.endGame = true
+		# Whoever remains is the winner
+		# Record the stats
+		# Clean out the room.
+		@numPlayers = @numPlayers - 1
 		return "You just lost the game."
+	end
+
+	def getGameActive
+		if(@game.nil?)
+			return false
+		else
+			return !@game.gameBoard.endGame
+		end
 	end
 end
 
@@ -144,6 +158,10 @@ class ConnectFourServer
 
 	def disconnect(roomId, player)
 		@gameRooms[roomId - 1].disconnect(player)
+	end
+
+	def getRoomGameActive(roomId)
+		@gameRooms[roomId - 1].getGameActive
 	end
 end
 

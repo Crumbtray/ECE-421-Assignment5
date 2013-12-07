@@ -14,47 +14,48 @@ class ConnectFourDatabase
                 player1     CHAR(40) NOT NULL,	\
                 player2     CHAR(40) NOT NULL,	\
 				gameType     CHAR(40) NOT NULL,	\
-				PRIMARY KEY ( player1 )
-              )
+				PRIMARY KEY ( player1 )	\
+              )	\
             ")
 	end
 	
 	def saveGame(player1_, player2_, gameType_)
 		#Insert entry into table (overwrite if past saved game exists)
-		@db.query("INSERT INTO savedGames (player1, player2, gameType)	\
+		@db.query("INSERT INTO savedGames(player1, player2, gameType)	\
 						VALUES ('#{player1_}', '#{player2_}', '#{gameType_}')	\
-					ON DUPLICATE KEY UPDATE (player2, gameType)	\
-						VALUES ('#{player2_}', '#{gameType_}')")
+					ON DUPLICATE KEY UPDATE	\
+						player2 = '#{player2_}',	\
+						gameType = '#{gameType_}'")
 						
 		# Post Conditions 
 		#Ensure that there is one entry for our newly inserted saved game
-		res = @db.query("SELECT * FROM savedGames(player1) VALUES('#{player1_}')")
-		assert(res.count == 1)
+		res = @db.query("SELECT * FROM savedGames WHERE player1 = '#{player1_}'")
+		assert(res.num_rows == 1)
 		#End Post Conditions						
 	end
 
 	def loadGame(player_)
 		# Post Conditions 
 		# Database has no more than one entry
-		res = @db.query("SELECT * FROM savedGames(player) VALUES('#{player_}')")
-		assert(res.count <= 1)
+		res = @db.query("SELECT * FROM savedGames WHERE player1 = '#{player_}'")
+		assert(res.num_rows <= 1)
 		# End Post Conditions
 		
 		player2 = nil
 		gameType = nil
-		res = @db.query("SELECT * FROM savedGames(player) VALUES('#{player_}')")
 		res.each_hash do |h| 
 			player2 = h['player2']
 			gameType = h['gameType']
 		end
 		
-		@db.query("DELETE FROM savedGames(player) VALUES('#{player_}')")
+		@db.query("DELETE FROM savedGames WHERE player1 = '#{player_}'")
 		
 		# Post Conditions 
 		# Database does not have it any more.
-		res = @db.query("SELECT * FROM savedGames(player) VALUES('#{player_}')")
-		assert(res.count == 0)
+		res = @db.query("SELECT * FROM savedGames WHERE player1 = '#{player_}'")
+		assert(res.num_rows == 0)
 		# End Post Conditions
+		return player2, gameType
 	end
 
 	def addWin(player)

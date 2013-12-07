@@ -132,12 +132,52 @@ class ConnectFourUI
       refreshLobby
     }
     refreshLobby
+
+    startGameButton = @builder.get_object("lobby_start_game")
+
+
     if(@client.gameServer.getRoomNumPlayers(@roomNumber) == 2)
-      startNormButton = @builder.get_object("startNorm")
-      startNormButton.sensitive = false
-      startTootButton = @builder.get_object("startToot")
-      startTootButton.sensitive = false
+      # You are the second player to enter the room.  You do not get to choose the game.
+      buttons = @builder.get_object("hbuttonbox2")
+      buttons.sensitive=false
     end
+
+    startGameButton.signal_connect("clicked") {
+      if(@client.gameServer.getRoomPlayer1(@roomNumber) == @playerName)
+        #I'm player 1, so I get to dictate the game.
+        normalGameTypeRadio = @builder.get_object("lobby_normal")
+        if(normalGameTypeRadio.active?)
+          startOnlineGame("Normal")
+        else
+          startOnlineGame("Toot")
+        end
+
+        @lobbyWindow.hide
+        @online_window = @builder.get_object("online_window")
+        @online_window.signal_connect("destroy") {
+          puts @client.gameServer.disconnect(@roomNumber, @playerName)
+          Gtk.main_quit
+        }
+        @online_window.show_all
+      else
+        # I'm player 2, so I have to keep checking until I can join the game.
+        if(!@client.gameServer.getRoomGameActive(@roomNumber))
+          dialog = Gtk::Dialog.new("Attention", @setupWindow)
+          dialog.signal_connect('response') {dialog.destroy}
+          dialog.vbox.add(Gtk::Label.new("Waiting on Player 1 to decide on the game."))
+          dialog.show_all
+        else
+          @lobbyWindow.hide
+          @online_window = @builder.get_object("online_window")
+          @online_window.signal_connect("destroy") {
+            puts @client.gameServer.disconnect(@roomNumber, @playerName)
+            Gtk.main_quit
+          }
+
+          @online_window.show_all
+        end
+      end
+    }
 
   end
 
@@ -154,6 +194,17 @@ class ConnectFourUI
     end
   end
 
+  def startOnlineGame(gameType)
+    if(@client.gameServer.getRoomNumPlayers(@roomNumber) != 2)
+      dialog = Gtk::Dialog.new("Attention", @setupWindow)
+      dialog.signal_connect('response') {dialog.destroy}
+      dialog.vbox.add(Gtk::Label.new("You require 2 players to play."))
+      dialog.show_all
+    else
+      @client.gameServer.startGame(@roomNumber, @playerName, gameType)
+    end
+
+  end
 
 
 end
