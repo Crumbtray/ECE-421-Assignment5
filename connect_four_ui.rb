@@ -82,6 +82,32 @@ class ConnectFourUI
       tryJoinRoom
     }
 
+    leaderBoardsButton = @builder.get_object("leaderBoards")
+    leaderBoardsButton.signal_connect {
+      @leaderBoardWindow = @builder.get_object("leaderBoardWindow")
+
+      labelText = "LeaderBoards\nName:\t\tWin:\t\tLose\t\tTie:\n"
+
+      leaderboardInfo = @client.gameServer.getLeaderBoard
+      leaderboardInfo.each {|row|
+        row.each {|entry|
+          labelText.concat("#{entry}\t\t")
+        }
+        labelText.concat("\n")
+      }
+
+      leaderBoardsLabel = @builder.get_object("leaderBoardText")
+      leaderBoardsLabel.text=labelText
+
+      leaderBoardCloseButton = @builder.get_object("closeLeaderBoard")
+      leaderBoardCloseButton.signal_connect("clicked") {
+        @leaderBoardWindow.hide
+      }
+
+      @leaderBoardWindow.show_all
+
+    }
+
     @roomNumberText = @builder.get_object("roomNumber")
 
   end
