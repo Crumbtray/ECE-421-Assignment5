@@ -91,7 +91,7 @@ class ConnectFourUI
       leaderboardInfo = @client.gameServer.getLeaderBoard
       leaderboardInfo.each {|row|
         row.each {|entry|
-          labelText.concat("#{entry}\t\t")
+          labelText.concat("#{entry}\t\t\t")
         }
         labelText.concat("\n")
       }
