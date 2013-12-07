@@ -107,22 +107,29 @@ class ConnectFourUI
 
     loadButton = @builder.get_object("loadGame")
     loadButton.signal_connect("clicked") {
-      roomId = @client.gameServer.loadGame(@playerName)
-      if(roomId == -1)
+      begin
+        roomId = @client.gameServer.loadGame(@playerName)
+        if(roomId == -1)
+          dialog = Gtk::Dialog.new("Attention", @setupWindow)
+          dialog.signal_connect('response') {dialog.destroy}
+          dialog.vbox.add(Gtk::Label.new("You have no saved games."))
+          dialog.show_all
+        else
+          @roomNumber = roomId
+          @window1.hide()
+          @lobbyWindow = @builder.get_object("lobby_window")
+          @lobbyWindow.signal_connect("destroy") {
+              puts @client.gameServer.disconnect(@roomNumber, @playerName)
+              Gtk.main_quit
+          }
+          setupLobbyRoom
+          @lobbyWindow.show_all
+        end
+      rescue Exception => e
         dialog = Gtk::Dialog.new("Attention", @setupWindow)
         dialog.signal_connect('response') {dialog.destroy}
-        dialog.vbox.add(Gtk::Label.new("You have no saved games."))
+        dialog.vbox.add(Gtk::Label.new("Cannot load previous game."))
         dialog.show_all
-      else
-        @roomNumber = roomId
-        @window1.hide()
-        @lobbyWindow = @builder.get_object("lobby_window")
-        @lobbyWindow.signal_connect("destroy") {
-            puts @client.gameServer.disconnect(@roomNumber, @playerName)
-            Gtk.main_quit
-        }
-        setupLobbyRoom
-        @lobbyWindow.show_all
       end
     }
 
