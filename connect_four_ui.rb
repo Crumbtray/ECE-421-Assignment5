@@ -24,13 +24,10 @@ class ConnectFourUI
 
     playerName = @builder.get_object("player_name")
     setupExitButton = @builder.get_object("setup_exit")
-    puts setupExitButton
     setupExitButton.signal_connect("clicked") {
-      puts "CLICKED EXIT"
       Gtk.main_quit
     }
     setupStartButton = @builder.get_object("setup_start")
-    puts setupStartButton
     setupStartButton.signal_connect("clicked") {
       if(playerName.text.empty?)
         dialog = Gtk::Dialog.new("Attention", @setupWindow)
@@ -38,7 +35,6 @@ class ConnectFourUI
         dialog.vbox.add(Gtk::Label.new("You must have a name."))
         dialog.show_all
       else
-        puts "CLICKED START"
         @playerName = playerName.text
         ghosty = @builder.get_object("ghosty")
         if(ghosty.active?)
