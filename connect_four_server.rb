@@ -115,6 +115,8 @@ class ConnectFourServer
 		for i in 1..10
 			@gameRooms.push(ConnectFourGameRoom.new(i))
 		end
+
+		@db = ConnectFourDatabase.new
 	end
 
 	def getServers
