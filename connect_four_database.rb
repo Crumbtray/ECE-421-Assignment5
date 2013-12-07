@@ -57,8 +57,8 @@ class ConnectFourDatabase
 		# End Post Conditions
 	end
 
-	def addWin(player, result)
-        res = @db.query('select wins from results WHERE player = "#{player}"')
+	def addWin(player)
+        res = @db.query('SELECT wins FROM results WHERE player = "#{player}";')
         if res.num_rows == 0
             @db.query("INSERT INTO results (player, wins, losses, ties)
                             VALUES ('#{player}', 1, 0, 0);")
@@ -69,8 +69,8 @@ class ConnectFourDatabase
         end
 	end
     
-	def addLoss(player, result)
-        res = @db.query('select losses from results WHERE player = "#{player}"')
+	def addLoss(player)
+        res = @db.query('SELECT losses FROM results WHERE player = "#{player}";')
         if res.num_rows == 0
             @db.query("INSERT INTO results (player, wins, losses, ties)
                             VALUES ('#{player}', 0, 1, 0);")
@@ -81,8 +81,8 @@ class ConnectFourDatabase
         end
 	end
     
-	def addTie(player, result)
-        res = @db.query('select ties from results WHERE player = "#{player}"')
+	def addTie(player)
+        res = @db.query('SELECT ties FROM results WHERE player = "#{player}";')
         if res.num_rows == 0
             @db.query("INSERT INTO results (player, wins, losses, ties)
                             VALUES ('#{player}', 0, 0, 1);")
@@ -95,5 +95,17 @@ class ConnectFourDatabase
 
 	def getLeaderBoard
 
+        puts "sdfsdf"
+        res = @db.query('SELECT player, wins, losses, ties FROM results;')
+        
+        leaderboard = Array.new
+        
+        while row = res.fetch_row do
+            standing = Array.new(row)
+            leaderboard.push(standing)
+        end
+    
+        return leaderboard
+    
 	end
 end
