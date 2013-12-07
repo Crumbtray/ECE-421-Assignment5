@@ -219,7 +219,7 @@ class ConnectFourUI
         end
 
 
-        GLib::Timeout.add(100) {
+        GLib::Timeout.add(500) {
           updateBoard
         }
       end
