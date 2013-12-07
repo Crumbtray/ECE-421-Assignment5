@@ -99,7 +99,7 @@ class ConnectFourUI
       leaderBoardsLabel = @builder.get_object("leaderBoardText")
       leaderBoardsLabel.text=labelText
 
-      leaderBoardCloseButton = @builder.get_object("closeLeaderBoard")
+      leaderBoardCloseButton = @builder.get_object("closeLeaderboard")
       puts leaderBoardCloseButton
       leaderBoardCloseButton.signal_connect("clicked") {
         @leaderBoardWindow.hide
