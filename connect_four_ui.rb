@@ -83,7 +83,7 @@ class ConnectFourUI
     }
 
     leaderBoardsButton = @builder.get_object("leaderBoards")
-    leaderBoardsButton.signal_connect {
+    leaderBoardsButton.signal_connect("clicked") {
       @leaderBoardWindow = @builder.get_object("leaderBoardWindow")
 
       labelText = "LeaderBoards\nName:\t\tWin:\t\tLose\t\tTie:\n"
