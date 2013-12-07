@@ -16,6 +16,7 @@ class ConnectFourGameRoom
 	attr_reader :roomId, :numPlayers, :player1, :player2, :gameType
 
 	def initialize(roomId)
+		@db = ConnectFourDatabase.new
 		@roomId = roomId
 		@numPlayers = 0
 	end
@@ -75,11 +76,18 @@ class ConnectFourGameRoom
 
 	def move(player, column)
 		@game.move(player, column)
-		return "OK"
-	end
-
-	def getLeaderBoard()
-
+		if(@game.gameBoard.endGame)
+			if(@game.gameBoard.winner == "draw")
+				@db.addTie(@game.player1)
+				@db.addTie(@game.player2)
+			if(@game.gameBoard.winner == @game.player1)
+				@db.addWin(@game.Player1)
+				@db.addLoss(@game.Player2)
+			else
+				@db.addWin(@game.Player2)
+				@db.addLoss(@game.Player1)
+			end
+		end
 	end
 
 	def disconnect(player)
@@ -170,6 +178,7 @@ class ConnectFourServer
 	def getRoomWinner(roomId)
 		@gameRooms[roomId - 1].getWinner
 	end
+
 	def saveGame(player1, player2, gameType)
 		#Save the game to the db
 		@db.saveGame(player1, player2, gameType)
@@ -196,6 +205,10 @@ class ConnectFourServer
 			@gameRooms[freeRoomId - 1].startGame(player, gameType)
 		end
 		return freeRoomId
+	end
+
+	def getLeaderBoard()
+		return @db.getLeaderBoard
 	end
 end
 

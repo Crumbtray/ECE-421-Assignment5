@@ -64,7 +64,7 @@ module WinCheckerToot
 		end
 		if(!anyOpenSpace)
 			gameBoard.endGame = true;
-			return "draw"
+			gameBoard.winner = "draw"
 		end
 	end
 end
