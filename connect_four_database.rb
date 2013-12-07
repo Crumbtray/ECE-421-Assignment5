@@ -96,7 +96,6 @@ class ConnectFourDatabase
 
 	def getLeaderBoard
 
-        puts "sdfsdf"
         res = @db.query('SELECT player, wins, losses, ties FROM results;')
         
         leaderboard = Array.new
