@@ -80,7 +80,7 @@ class ConnectFourGameRoom
 			if(@game.gameBoard.winner == "draw")
 				@db.addTie(@game.player1)
 				@db.addTie(@game.player2)
-			if(@game.gameBoard.winner == @game.player1)
+			elsif(@game.gameBoard.winner == @game.player1)
 				@db.addWin(@game.Player1)
 				@db.addLoss(@game.Player2)
 			else
