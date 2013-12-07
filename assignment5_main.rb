@@ -4,3 +4,5 @@
 # Chris Beckett
 # Tyler Schneider
 # Clinton Wong
+
+require './connect_four_ui'

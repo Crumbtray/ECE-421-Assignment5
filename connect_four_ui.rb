@@ -271,7 +271,7 @@ class ConnectFourUI
     #Setup the Save Game Button.
     saveGameButton = @builder.get_object("save_game")
     saveGameButton.signal_connect("clicked") {
-      @client.gameServer.saveGame(@client.gameServer.getRoomPlayer1, @client.gameServer.getRoomPlayer2,@client.gameServer.getRoomGameType)
+      @client.gameServer.saveGame(@client.gameServer.getRoomPlayer1(@roomNumber), @client.gameServer.getRoomPlayer2(@roomNumber),@client.gameServer.getRoomGameType(@roomNumber))
     }
 
     # Setup the label.
